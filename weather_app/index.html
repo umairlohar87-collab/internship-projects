@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Aurora — a beautiful weather app with live conditions and 7-day forecast" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>Aurora · Weather</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="manifest" href="manifest.json" />
+</head>
+<body>
+  <!-- Animated background layers -->
+  <div class="bg-layer">
+    <div class="aurora"></div>
+    <div class="stars"></div>
+    <div class="grid"></div>
+  </div>
+
+  <div class="app">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-mark">
+          <span class="brand-dot"></span>
+          <span class="brand-dot"></span>
+          <span class="brand-dot"></span>
+        </div>
+        <div class="brand-text">
+          <h1>Aurora</h1>
+          <p class="brand-sub" id="brand-sub">Live weather</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button id="unit-toggle" class="btn-pill" aria-label="Toggle units">
+          <span data-unit="C" class="unit-option active">°C</span>
+          <span class="unit-divider">/</span>
+          <span data-unit="F" class="unit-option">°F</span>
+        </button>
+        <button id="location-btn" class="btn-icon" aria-label="Use my location" title="Use my location">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M12 21s-7-6.5-7-11a7 7 0 0 1 14 0c0 4.5-7 11-7 11z"/>
+            <circle cx="12" cy="10" r="2.5"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Search -->
+    <section class="search-section">
+      <div class="search-box">
+        <svg class="search-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="7"/>
+          <path d="m20 20-3.5-3.5"/>
+        </svg>
+        <input
+          type="text"
+          id="search-input"
+          placeholder="Search any city, e.g. Tokyo"
+          autocomplete="off"
+          aria-label="Search city"
+        />
+        <kbd class="search-hint">↵</kbd>
+      </div>
+      <ul id="suggestions" class="suggestions" role="listbox" hidden></ul>
+    </section>
+
+    <!-- Recent -->
+    <section class="recent-section" id="recent-section" hidden>
+      <div class="recent-list" id="recent-list"></div>
+    </section>
+
+    <!-- Loading -->
+    <div id="loading" class="loading" hidden>
+      <div class="loader">
+        <span></span><span></span><span></span>
+      </div>
+      <p class="loading-text">Fetching the sky…</p>
+    </div>
+
+    <!-- Error -->
+    <div id="error" class="error-box" hidden>
+      <div class="error-icon">⚠</div>
+      <p id="error-message"></p>
+      <button id="retry-btn" class="btn-ghost">Try again</button>
+    </div>
+
+    <!-- Weather -->
+    <main id="weather-content" hidden>
+      <!-- Hero / Current -->
+      <section class="current-card">
+        <div class="current-top">
+          <div class="place-info">
+            <h2 id="city-name">—</h2>
+            <p id="local-time" class="local-time">—</p>
+          </div>
+          <div class="current-icon-wrap">
+            <div class="icon-glow"></div>
+            <div class="current-icon" id="current-icon">☀️</div>
+          </div>
+        </div>
+
+        <div class="current-temp-block">
+          <span id="current-temp" class="big-temp">—</span>
+          <span class="unit-label" id="temp-unit">°C</span>
+        </div>
+
+        <p id="condition-text" class="condition-text">—</p>
+
+        <div class="current-details">
+          <div class="detail-card">
+            <span class="detail-label">Feels like</span>
+            <span id="feels-like" class="detail-value">—</span>
+          </div>
+          <div class="detail-card">
+            <span class="detail-label">Humidity</span>
+            <span id="humidity" class="detail-value">—</span>
+          </div>
+          <div class="detail-card">
+            <span class="detail-label">Wind</span>
+            <span id="wind" class="detail-value">—</span>
+          </div>
+          <div class="detail-card">
+            <span class="detail-label">Sunrise</span>
+            <span id="sunrise" class="detail-value">—</span>
+          </div>
+          <div class="detail-card">
+            <span class="detail-label">Sunset</span>
+            <span id="sunset" class="detail-value">—</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Hourly -->
+      <section class="panel">
+        <div class="panel-head">
+          <h2 class="section-title">Next 24 hours</h2>
+          <span class="panel-tag" id="hourly-tag">hourly</span>
+        </div>
+        <div class="hourly-scroll" id="hourly-list"></div>
+      </section>
+
+      <!-- Daily -->
+      <section class="panel">
+        <div class="panel-head">
+          <h2 class="section-title">7-day forecast</h2>
+          <span class="panel-tag" id="daily-tag">weekly</span>
+        </div>
+        <div class="daily-list" id="daily-list"></div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <span>Data by</span>
+      <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a>
+      <span class="dot">·</span>
+      <span>Built with ♥</span>
+    </footer>
+  </div>
+
+  <script src="js/utils.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
