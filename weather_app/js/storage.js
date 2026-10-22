@@ -1,33 +1,30 @@
-const RECENT_KEY = "weather_recent";
-const UNIT_KEY = "weather_unit";
-const MAX_RECENT = 6;
+"use strict";
+
+const RECENT_KEY = "aurora_recent";
+const RECENT_MAX = 6;
 
 function getRecent() {
   try {
-    return JSON.parse(localStorage.getItem(RECENT_KEY)) || [];
+    const raw = localStorage.getItem(RECENT_KEY);
+    const list = raw ? JSON.parse(raw) : [];
+    return Array.isArray(list) ? list : [];
   } catch {
     return [];
   }
 }
 
 function addRecent(place) {
-  const recent = getRecent().filter(
-    (p) => !(p.latitude === place.latitude && p.longitude === place.longitude)
+  if (!place || !place.latitude || !place.longitude) return;
+  const list = getRecent().filter(
+    (p) => !(Math.abs(p.latitude - place.latitude) < 0.01 &&
+             Math.abs(p.longitude - place.longitude) < 0.01)
   );
-  recent.unshift({
-    name: place.name,
-    country: place.country,
+  list.unshift({
+    name: place.name || "Unknown",
+    country: place.country || "",
     latitude: place.latitude,
     longitude: place.longitude,
-    timezone: place.timezone,
+    timezone: place.timezone || "",
   });
-  localStorage.setItem(RECENT_KEY, JSON.stringify(recent.slice(0, MAX_RECENT)));
-}
-
-function getUnit() {
-  return localStorage.getItem(UNIT_KEY) || "C";
-}
-
-function setUnit(unit) {
-  localStorage.setItem(UNIT_KEY, unit);
+  localStorage.setItem(RECENT_KEY, JSON.stringify(list.slice(0, RECENT_MAX)));
 }
